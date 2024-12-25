@@ -1,38 +1,27 @@
-#include <array>
+#include <BoardTable.hpp>
+#include <ErrorMessage.hpp>
+#include <GameHelpers.hpp>
+#include <Player.hpp>
 #include <iostream>
 #include <optional>
 #include <string>
 
-const uint8_t COL = 5;
-const uint8_t ROW = 3;
-
-// TODO make this struct
-
-using Board = std::array<std::array<char, COL>, ROW>;
-void initializeBoard(Board&);
-void printBoard(const Board& b);
-
-struct Player {
-  std::string_view name;
-  char value;
-};
+extern const uint8_t COL;
+extern const uint8_t ROW;
 
 void startMessage();
-using ErrorMessage = std::string;
-std::optional<ErrorMessage> switchTurn(Board&, const Player&);
+ErrorMessage switchTurn(Board&, const Player&);
 void printError(const ErrorMessage&);
 
 int main(int argc, char const* argv[]) {
-  //
-  Board b;
-  initializeBoard(b);
+  BoardTable table;
   startMessage();
 
   const Player playerX{"Player X", 'X'}, playerO{"Player O", 'O'};
   Player currentPlayer = playerX;
   bool continuePlay{true};
   do {
-    auto err = switchTurn(b, currentPlayer);
+    auto err = switchTurn(table.board, currentPlayer);
 
     // error handling
     if (err) {
@@ -40,6 +29,7 @@ int main(int argc, char const* argv[]) {
       return 1;
     }
 
+    table.print();
     // changePlayer
     currentPlayer = currentPlayer.name == playerX.name ? playerO : playerX;
 
@@ -51,34 +41,19 @@ int main(int argc, char const* argv[]) {
 void startMessage() {
   std::cout << "Wellcome to Tic Tac Toe game. " << std::endl;
   std::cout << "You will play on the following board. " << std::endl;
-  Board b;
-  initializeBoard(b);
-  printBoard(b);
+  BoardTable b;
+  b.print();
 }
 
-void printError(const ErrorMessage& error) { std::cout << error << std::endl; }
-
-// TODO improve error handling!
-std::optional<ErrorMessage> validate(const int& position) {
-  if (0 < position && position <= ROW * COL) return {};
-  if (position == -1) return "Thanks for playing. Bye bye ^^";
-  return "Invalid input!";
+void printError(const ErrorMessage& error) {
+  if (error) std::cout << error.value() << std::endl;
 }
 
-// TODO move to validation
-std::pair<int, int> calculatePositions(const int& positionValue) {
-  // Substractiong 1 because computer counts from 0 and not from 1
-  int position = positionValue - 1;
-  int row = (position / COL);
-  int col = position % COL;
-  return {row, col};
-}
-
-std::optional<ErrorMessage> checkPositions(Board& board, char value,
-                                           const int& positionValue) {
+ErrorMessage checkPositions(Board& board, char value,
+                            const int& positionValue) {
   const auto [row, col] = calculatePositions(positionValue);
 
-  // TODO additional validation!
+  // TODO additional validation! // Moved to board table
   char boardValue = board[row][col];
   if (boardValue != 'Q') {
     // TODO requires additional handling, because the same player needs to play
@@ -117,14 +92,12 @@ std::optional<ErrorMessage> checkPositions(Board& board, char value,
     return "Its a winner!";
   }
 
-  printBoard(board);
   // TODO check if limits are ok!!
-  // TODO check GAME OVER is missing;
 
   return {};
 }
 
-std::optional<ErrorMessage> switchTurn(Board& board, const Player& player) {
+ErrorMessage switchTurn(Board& board, const Player& player) {
   std::cout << player.name
             << "'s turn. Choose your position by typing the letter or type -1 "
                "to quit."
@@ -136,46 +109,14 @@ std::optional<ErrorMessage> switchTurn(Board& board, const Player& player) {
   auto r = validate(position);
   if (r) return r;
 
+  // TODO enable this
+  // const auto [row, col] = calculatePositions(positionValue);
+  // auto err = boardTable.insert(row, col, player.value);
+  // if(err) {repeatSamePlayer();}
+  //  else switchPlayers();
+
   auto finished = checkPositions(board, player.value, position);
   if (finished) return finished;
 
   return {};
-}
-
-void emptyLine() {
-  // TODO
-  for (int i = 0; i < COL; ++i) std::cout << "---";
-  std::cout << std::endl;
-}
-
-void initializeBoard(Board& board) {
-  uint8_t counter = 0;
-  for (uint8_t i = 0; i < ROW; ++i) {
-    for (uint8_t j = 0; j < COL; ++j) {
-      ++counter;
-      board[i][j] = 'Q';
-    }
-  }
-}
-
-// TODO improve
-void printBoard(const Board& board) {
-  int counter = 0;
-  for (uint8_t i = 0; i < ROW; ++i) {
-    emptyLine();
-    for (uint8_t j = 0; j < COL; ++j) {
-      // edz improve printing!
-      if (counter < 9) {
-        std::cout << "| ";
-      } else
-        std::cout << "|";
-      ++counter;
-      if (board[i][j] == 'Q')
-        std::cout << counter;
-      else
-        std::cout << board[i][j];
-    }
-    std::cout << "|" << std::endl;
-  }
-  emptyLine();
 }
