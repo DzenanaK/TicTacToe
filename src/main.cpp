@@ -1,6 +1,7 @@
 #include <BoardTable.hpp>
 #include <ErrorMessage.hpp>
 #include <GameHelpers.hpp>
+#include <GameStatus.hpp>
 #include <Player.hpp>
 #include <iostream>
 #include <optional>
@@ -10,7 +11,7 @@ extern const uint8_t COL;
 extern const uint8_t ROW;
 
 void startMessage();
-ErrorMessage switchTurn(Board&, const Player&);
+GameStatus switchTurn(Board&, const Player&);
 void printError(const ErrorMessage&);
 
 int main(int argc, char const* argv[]) {
@@ -24,14 +25,17 @@ int main(int argc, char const* argv[]) {
     auto err = switchTurn(table.board, currentPlayer);
 
     // error handling
-    if (err) {
-      printError(*err);
-      return 1;
+    if (err == GameStatus::NextPlayer) {
+      table.print();
+      // changePlayer
+      currentPlayer = currentPlayer.name == playerX.name ? playerO : playerX;
+    } else if (err == GameStatus::SamePlayer) {
+      //
     }
-
-    table.print();
-    // changePlayer
-    currentPlayer = currentPlayer.name == playerX.name ? playerO : playerX;
+    // Case (err == GameStatus::GameOver || err == GameStatus::Winner)
+    else {
+      continuePlay = false;
+    }
 
   } while (continuePlay);
 
@@ -97,7 +101,7 @@ ErrorMessage checkPositions(Board& board, char value,
   return {};
 }
 
-ErrorMessage switchTurn(Board& board, const Player& player) {
+GameStatus switchTurn(Board& board, const Player& player) {
   std::cout << player.name
             << "'s turn. Choose your position by typing the letter or type -1 "
                "to quit."
@@ -106,8 +110,13 @@ ErrorMessage switchTurn(Board& board, const Player& player) {
   int position = 0;
   std::cin >> position;
 
-  auto r = validate(position);
-  if (r) return r;
+  auto err = validate(position);
+  if (err) {
+    // TODO not good
+    // TODO Error and game code should be part of one struct
+    printError(err);
+    return GameStatus::GameOver;
+  };
 
   // TODO enable this
   // const auto [row, col] = calculatePositions(positionValue);
@@ -116,7 +125,10 @@ ErrorMessage switchTurn(Board& board, const Player& player) {
   //  else switchPlayers();
 
   auto finished = checkPositions(board, player.value, position);
-  if (finished) return finished;
+  if (finished) {
+    printError(finished);
+    return GameStatus::GameOver;
+  }
 
-  return {};
+  return GameStatus::NextPlayer;
 }

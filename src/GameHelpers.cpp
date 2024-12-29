@@ -12,5 +12,5 @@ std::pair<int, int> calculatePositions(const int& positionNumber) {
 ErrorMessage validate(const int& positionNumber) {
   if (0 < positionNumber && positionNumber <= ROW * COL) return {};
   if (positionNumber == -1) return "Thanks for playing. Bye bye ^^";
-  return "Invalid input!";
+  return "Invalid input! Try again";
 }
