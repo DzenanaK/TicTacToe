@@ -5,7 +5,8 @@ incdir = include_directories('include')
 srcs = [
     'src/main.cpp'
     ,'src/BoardTable.cpp'
-    ,'src/GameHelpers.cpp'
+    ,'src/ValidationResult.cpp'
+    ,'src/TicTacToe.cpp'
 ]
 
 executable('ticTacToe', srcs, include_directories: incdir)

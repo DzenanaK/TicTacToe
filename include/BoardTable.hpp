@@ -6,6 +6,9 @@
 #include <cstdint>
 #include <optional>
 
+// TODO check structs and classes, add forward declarations
+struct ValidationResult;
+
 using Board = std::array<std::array<char, COL>, ROW>;
 
 struct BoardTable {
@@ -16,9 +19,10 @@ struct BoardTable {
 
   // Inserts element into the board. It expects proper position. In case the
   // field is already populated it returns error.
-  ErrorMessage insert(const int& row, const int& col, char value);
+  ValidationResult insert(const int& row, const int& col, char value);
   void print();
-  bool gameOver() const;
+  // TODO probably part of the game struct
+  bool full() const;
 
  private:
   void init();

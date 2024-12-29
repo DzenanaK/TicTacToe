@@ -1,4 +1,5 @@
 #include <BoardTable.hpp>
+#include <ValidationResult.hpp>
 #include <iostream>
 #include <string>
 
@@ -38,12 +39,12 @@ void BoardTable::print() {
   emptyLine();
 }
 
-ErrorMessage BoardTable::insert(const int& row, const int& col, char value) {
-  char& boardValue = board[row][col];
-
+ValidationResult BoardTable::insert(const int& row, const int& col,
+                                    char value) {
   // Board is populated with DEF_VAL by default (in init method)
-  if (boardValue != DEF_VAL) {
-    return "Invalid position, field is already populated. Please try again!";
+  if (const char& boardValue = board[row][col]; boardValue != DEF_VAL) {
+    return {GameStatus::SamePlayer,
+            "Invalid position, field is already populated. Please try again!"};
   }
 
   // Insert the value in the board
@@ -53,4 +54,4 @@ ErrorMessage BoardTable::insert(const int& row, const int& col, char value) {
   return {};
 }
 
-bool BoardTable::gameOver() const { return filledFields == ROW * COL; }
+bool BoardTable::full() const { return filledFields == ROW * COL; }

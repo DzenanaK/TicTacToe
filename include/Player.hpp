@@ -1,7 +1,7 @@
 #pragma once
-#include <string_view>
+#include <string>
 
 struct Player {
-  std::string_view name;
+  std::string name;
   char value;
 };
