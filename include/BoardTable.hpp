@@ -1,29 +1,22 @@
 #pragma once
 
-#include <ConstVariables.hpp>
-#include <ErrorMessage.hpp>
-#include <array>
-#include <cstdint>
-#include <optional>
+#include <Board.hpp>
+#include <GameLogic.hpp>
 
-// TODO check structs and classes, add forward declarations
-struct ValidationResult;
-
-using Board = std::array<std::array<char, COL>, ROW>;
-
-struct BoardTable {
-  Board board;
-  uint8_t filledFields;
-
+class BoardTable {
+ public:
   BoardTable();
 
-  // Inserts element into the board. It expects proper position. In case the
-  // field is already populated it returns error.
-  ValidationResult insert(const int& row, const int& col, char value);
-  void print();
-  // TODO probably part of the game struct
+  const Board& board() const;
+
+  void insert(const int& row, const int& col, char value);
+  void print() const;
+
   bool full() const;
+  bool win(const int& row, const int& col) const;
 
  private:
-  void init();
+  Board board_;
+  uint8_t filledFields_;
+  GameLogic logic_;
 };

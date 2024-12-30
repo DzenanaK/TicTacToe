@@ -1,13 +1,9 @@
 #pragma once
 
-// TODO change names for both
 #include <ErrorMessage.hpp>
 #include <GameStatus.hpp>
 
 class ValidationResult {
-  GameStatus gameStatus;
-  ErrorMessage errorMessage;
-
  public:
   ValidationResult(GameStatus&& = GameStatus::NextPlayer, ErrorMessage&& = {});
 
@@ -15,5 +11,9 @@ class ValidationResult {
   bool operator!() const;
 
   GameStatus status() const;
-  void printError() const;
+  void printMessage() const;
+
+ private:
+  GameStatus gameStatus_;
+  ErrorMessage errorMessage_;
 };

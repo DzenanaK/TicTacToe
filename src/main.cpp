@@ -1,5 +1,4 @@
 #include <BoardTable.hpp>
-#include <ErrorMessage.hpp>
 #include <GameStatus.hpp>
 #include <Player.hpp>
 #include <TicTacToe.hpp>
@@ -20,25 +19,21 @@ int main(int argc, char const* argv[]) {
   TicTacToe game;
   bool continuePlay{true};
   do {
-    auto err = game.nextMove();
+    auto valResult = game.nextMove();
 
-    // error handling
-    if (err.status() == GameStatus::NextPlayer) {
+    // GameStatus handling
+    if (valResult.status() == GameStatus::NextPlayer) {
       game.switchPlayer();
-    } else if (err.status() == GameStatus::SamePlayer) {
-      // TODO perhaps errorMessage can be removed and written here
-      err.printError();
-    } else if (err.status() == GameStatus::Winner) {
+    } else if (valResult.status() == GameStatus::SamePlayer) {
+      valResult.printMessage();
+    } else if (valResult.status() == GameStatus::Winner) {
       gameOver(continuePlay, "Game over: we have the winner. Congratulations!");
-    } else if (err.status() == GameStatus::GameOver) {
+    } else if (valResult.status() == GameStatus::GameOver) {
       gameOver(continuePlay, "Game over: no more moves left.");
     } else {
       // case status == End
       gameOver(continuePlay, "Thank you for playing.");
     }
-
-    // TODO perhaps this shouldn't be error but message or enum with conversion?
-    // err.printError();
 
   } while (continuePlay);
 

@@ -3,34 +3,28 @@
 #include <iostream>
 #include <string>
 
-inline const char DEF_VAL = DEF_VAL;
+using namespace TTT;
 
-BoardTable::BoardTable() { init(); }
-
-void BoardTable::init() {
-  filledFields = 0;
-
-  for (uint8_t i = 0; i < ROW; ++i) {
-    for (uint8_t j = 0; j < COL; ++j) {
-      board[i][j] = DEF_VAL;
-    }
-  }
+BoardTable::BoardTable() : filledFields_{0}, logic_{board_} {
+  for (auto& row : board_) row.fill(DEF_VAL);
 }
+
+const Board& BoardTable::board() const { return board_; }
 
 void emptyLine() { std::cout << "-----------------" << std::endl; }
 
-void BoardTable::print() {
+void BoardTable::print() const {
   int counter = 1;
 
   for (uint8_t i = 0; i < ROW; ++i) {
     emptyLine();
     for (uint8_t j = 0; j < COL; ++j) {
       std::cout << '|';
-      if (counter < 10 || board[i][j] != DEF_VAL) std::cout << ' ';
-      if (board[i][j] == DEF_VAL)
+      if (counter < 10 || board_[i][j] != DEF_VAL) std::cout << ' ';
+      if (board_[i][j] == DEF_VAL)
         std::cout << counter;
       else
-        std::cout << board[i][j];
+        std::cout << board_[i][j];
       ++counter;
     }
     std::cout << "|" << std::endl;
@@ -39,19 +33,16 @@ void BoardTable::print() {
   emptyLine();
 }
 
-ValidationResult BoardTable::insert(const int& row, const int& col,
-                                    char value) {
-  // Board is populated with DEF_VAL by default (in init method)
-  if (const char& boardValue = board[row][col]; boardValue != DEF_VAL) {
-    return {GameStatus::SamePlayer,
-            "Invalid position, field is already populated. Please try again!"};
-  }
-
+void BoardTable::insert(const int& row, const int& col, char value) {
   // Insert the value in the board
-  board[row][col] = value;
+  board_[row][col] = value;
   // Increase counter of populated fields
-  ++filledFields;
-  return {};
+  ++filledFields_;
 }
 
-bool BoardTable::full() const { return filledFields == ROW * COL; }
+bool BoardTable::full() const { return filledFields_ == ROW * COL; }
+
+bool BoardTable::win(const int& row, const int& col) const {
+  return logic_.winInColumn(row, col) || logic_.winInRow(row, col) ||
+         logic_.winInDiagonal(row, col);
+}

@@ -2,15 +2,16 @@
 #include <iostream>
 
 ValidationResult::ValidationResult(GameStatus&& gs, ErrorMessage&& er)
-    : gameStatus{gs}, errorMessage{er} {}
+    : gameStatus_{gs}, errorMessage_{er} {}
 
-ValidationResult::operator bool() const { return !errorMessage; }
+ValidationResult::operator bool() const { return !errorMessage_; }
+
 bool ValidationResult::operator!() const {
-  return static_cast<bool>(errorMessage);
+  return static_cast<bool>(errorMessage_);
 }
 
-GameStatus ValidationResult::status() const { return gameStatus; }
+GameStatus ValidationResult::status() const { return gameStatus_; }
 
-void ValidationResult::printError() const {
-  if (errorMessage) std::cout << errorMessage.value() << std::endl;
+void ValidationResult::printMessage() const {
+  if (errorMessage_) std::cout << errorMessage_.value() << std::endl;
 }
