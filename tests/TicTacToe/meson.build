@@ -1,6 +1,7 @@
 tic_tac_toe_test_srcs = [
-    'TicTacToeTests.cpp'
-    ,'BoardTableTests.cpp'
+    'TicTacToeTest.cpp'
+    ,'GameLogicTest.cpp'
+    ,'PositionValidatorTest.cpp'
 ]
 
 

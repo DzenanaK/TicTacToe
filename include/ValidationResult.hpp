@@ -11,6 +11,7 @@ class ValidationResult {
   bool operator!() const;
 
   GameStatus status() const;
+  const ErrorMessage& errorMessage() const;
   void printMessage() const;
 
  private:

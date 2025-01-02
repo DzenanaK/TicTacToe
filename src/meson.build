@@ -6,7 +6,6 @@ tic_tac_toe_srcs = [
     'ValidationResult.cpp'
     ,'BoardTable.cpp'
     ,'TicTacToe.cpp'
-    ,'PositionCalculator.cpp'
     ,'PositionValidator.cpp'
     ,'GameLogic.cpp'
 ]

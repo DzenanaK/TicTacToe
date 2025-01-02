@@ -5,13 +5,13 @@ const Player TicTacToe::playerX = {"Player X", 'X'};
 const Player TicTacToe::playerO = {"Player O", 'O'};
 
 TicTacToe::TicTacToe()
-    : currentPlayer{&playerX},
-      validator_{boardTable_.board()},
-      calculator_{boardTable_.board()} {}
+    : currentPlayer_{&playerX}, validator_{boardTable_.board()} {}
+
+TicTacToe::~TicTacToe() {}
 
 void TicTacToe::switchPlayer() {
   boardTable_.print();
-  currentPlayer = (currentPlayer == &playerX ? &playerO : &playerX);
+  currentPlayer_ = (currentPlayer_ == &playerX ? &playerO : &playerX);
 }
 
 ValidationResult TicTacToe::nextMove() {
@@ -20,12 +20,12 @@ ValidationResult TicTacToe::nextMove() {
   auto validationPassed = validator_.validate(position);
   if (!validationPassed) return validationPassed;
 
-  const auto [row, col] = calculator_.calculate(position);
+  const auto [row, col] = calculateCoordinates(position);
 
-  auto canInsert = validator_.validate(row, col, currentPlayer->value);
+  auto canInsert = validator_.validate(row, col, currentPlayer_->value);
   if (!canInsert) return canInsert;
 
-  boardTable_.insert(row, col, currentPlayer->value);
+  boardTable_.insert(row, col, currentPlayer_->value);
 
   if (boardTable_.win(row, col))
     return GameStatus::Winner;
@@ -36,7 +36,7 @@ ValidationResult TicTacToe::nextMove() {
 }
 
 int TicTacToe::newPosition() const {
-  std::cout << currentPlayer->name
+  std::cout << currentPlayer_->name
             << "'s turn. Choose your position by typing the letter or type -1 "
                "to quit."
             << std::endl;
@@ -44,4 +44,13 @@ int TicTacToe::newPosition() const {
   int position = 0;
   std::cin >> position;
   return position;
+}
+
+std::pair<int, int> TicTacToe::calculateCoordinates(
+    const uint8_t& newPosition) const {
+  // Substractiong 1 because computer counts from 0 and not from 1
+  int position = newPosition - 1;
+  int row = (position / TTT::COL);
+  int col = position % TTT::COL;
+  return {row, col};
 }

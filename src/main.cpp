@@ -1,4 +1,5 @@
 #include <BoardTable.hpp>
+#include <ConstVariables.hpp>
 #include <GameStatus.hpp>
 #include <Player.hpp>
 #include <TicTacToe.hpp>
@@ -6,9 +7,6 @@
 #include <iostream>
 #include <optional>
 #include <string>
-
-extern const uint8_t COL;
-extern const uint8_t ROW;
 
 void startMessage();
 void gameOver(bool& continueGame, std::string&& message);

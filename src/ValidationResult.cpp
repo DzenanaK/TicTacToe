@@ -11,6 +11,9 @@ bool ValidationResult::operator!() const {
 }
 
 GameStatus ValidationResult::status() const { return gameStatus_; }
+const ErrorMessage& ValidationResult::errorMessage() const {
+  return errorMessage_;
+}
 
 void ValidationResult::printMessage() const {
   if (errorMessage_) std::cout << errorMessage_.value() << std::endl;

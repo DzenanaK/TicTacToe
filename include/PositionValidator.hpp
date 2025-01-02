@@ -7,10 +7,13 @@ class PositionValidator {
  public:
   PositionValidator(const Board&);
 
-  // Validation of the input value (aka position)
+  // Validating the user input value (aka position). Represents basic
+  // validation, before continuing to calculate actual positions in the board.
   ValidationResult validate(const int& newPosition) const;
 
-  // Validation of the positions in the board
+  // Validating coordinates in the board. Represents validation before inputing
+  // the value in to the board. It ensures that existing values aren't overriden
+  // by new attempts.
   ValidationResult validate(const int& row, const int& col, char value) const;
 
  private:
