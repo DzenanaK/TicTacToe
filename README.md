@@ -52,8 +52,9 @@ cd tic-tac-toe
 Initialize the build directory using Meson and navigate to the build directory:
 
 ```bash
-meson setup build
+mkdir build
 cd build
+meson ..
 ```
 
 ### 4. Build project
