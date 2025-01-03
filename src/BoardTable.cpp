@@ -11,26 +11,36 @@ BoardTable::BoardTable() : filledFields_{0}, logic_{board_} {
 
 const Board& BoardTable::board() const { return board_; }
 
-void emptyLine() { std::cout << "-----------------" << std::endl; }
-
 void BoardTable::print() const {
-  int counter = 1;
+  std::string rowDelimiter;
+  for (auto i = 0; i < TTT::COL; ++i) rowDelimiter += "---";
+  rowDelimiter += "\n";
+  // Number of the characters in the for loop
+  int capacity = ROW * (rowDelimiter.size() + COL * 3 + 3);
+  // Number of the characters after the for loop
+  capacity += (rowDelimiter.size() + 1);
+  std::string message;
+  message.reserve(capacity);
 
+  int counter = 1;
   for (uint8_t i = 0; i < ROW; ++i) {
-    emptyLine();
+    message += rowDelimiter;
     for (uint8_t j = 0; j < COL; ++j) {
-      std::cout << '|';
-      if (counter < 10 || board_[i][j] != DEF_VAL) std::cout << ' ';
+      message += "|";
+      if (counter < 10 || board_[i][j] != DEF_VAL) message += " ";
       if (board_[i][j] == DEF_VAL)
-        std::cout << counter;
+        message += std::to_string(counter);
       else
-        std::cout << board_[i][j];
+        message += board_[i][j];
       ++counter;
     }
-    std::cout << "|" << std::endl;
+    message += "| \n";
   }
 
-  emptyLine();
+  message += rowDelimiter;
+  message += "\n";
+
+  std::cout << message << std::endl;
 }
 
 void BoardTable::insert(const int& row, const int& col, char value) {
