@@ -44,7 +44,7 @@ git clone git@github.com:DzenanaK/TicTacToe.git
 Navigate to the cloned project  directory:
 
 ```bash
-cd tic-tac-toe
+cd TicTacToe
 ```
 
 ### 3. Set Up the Build Directory with Meson
