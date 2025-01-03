@@ -9,7 +9,7 @@ ValidationResult PositionValidator::validate(const int& newPosition) const {
   if (newPosition == TTT::END_GAME_POSITION)
     return {GameStatus::End, "Thanks for playing. Bye bye ^^"};
 
-  return {GameStatus::SamePlayer,
+  return {GameStatus::RepeatMove,
           "Position is out of scope. Please, try again."};
 }
 
@@ -19,7 +19,7 @@ ValidationResult PositionValidator::validate(const int& row, const int& col,
   // stores other value than DEF_VAL, it means that that field is already
   // populated and shouldn't be changed.
   if (board_[row][col] != TTT::DEF_VAL) {
-    return {GameStatus::SamePlayer,
+    return {GameStatus::RepeatMove,
             "Field is already populated. Please try again."};
   }
 

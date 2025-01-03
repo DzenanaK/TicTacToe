@@ -7,7 +7,7 @@ struct TicTacToeFixture : ::testing::Test, TicTacToe {
   int setNewPosition;
 
  private:
-  int newPosition() const override { return setNewPosition; }
+  int getPosition() const override { return setNewPosition; }
 };
 
 // NOTE: Ensuring that test requirements are met. However, application does not
@@ -78,57 +78,57 @@ TEST_F(TicTacToeFixture, ExpectToProperlyCalculateCoordinatesFrom9) {
 
 TEST_F(TicTacToeFixture, ExpectToContinueWithNextPlayerWhenValidInput) {
   setNewPosition = 1;
-  auto valResult = nextMove();
+  auto valResult = playMove();
 
-  EXPECT_EQ(valResult.status(), GameStatus::NextPlayer);
+  EXPECT_EQ(valResult.gameStatus, GameStatus::Continue);
   EXPECT_TRUE(valResult);
-  EXPECT_FALSE(valResult.errorMessage());
+  EXPECT_FALSE(valResult.errorMessage);
 }
 
 TEST_F(TicTacToeFixture, ExpectToEndGameWhenManuallyChosen) {
   setNewPosition = TTT::END_GAME_POSITION;
-  auto valResult = nextMove();
+  auto valResult = playMove();
 
-  EXPECT_EQ(valResult.status(), GameStatus::End);
+  EXPECT_EQ(valResult.gameStatus, GameStatus::End);
   EXPECT_FALSE(valResult);
-  EXPECT_TRUE(valResult.errorMessage());
-  EXPECT_EQ(valResult.errorMessage().value(),
+  EXPECT_TRUE(valResult.errorMessage);
+  EXPECT_EQ(valResult.errorMessage.value(),
             std::string{"Thanks for playing. Bye bye ^^"});
 }
 
 TEST_F(TicTacToeFixture, ExpectToRepeatMoveWhenNegative) {
   setNewPosition = -8;
-  auto valResult = nextMove();
+  auto valResult = playMove();
 
-  EXPECT_EQ(valResult.status(), GameStatus::SamePlayer);
+  EXPECT_EQ(valResult.gameStatus, GameStatus::RepeatMove);
   EXPECT_FALSE(valResult);
-  EXPECT_TRUE(valResult.errorMessage());
-  EXPECT_EQ(valResult.errorMessage().value(),
+  EXPECT_TRUE(valResult.errorMessage);
+  EXPECT_EQ(valResult.errorMessage.value(),
             std::string{"Position is out of scope. Please, try again."});
 }
 
 TEST_F(TicTacToeFixture, ExpectToRepeatMoveWhenGreaterThanNumberOfCells) {
   setNewPosition = TTT::ROW * TTT::COL + 1;
-  auto valResult = nextMove();
+  auto valResult = playMove();
 
-  EXPECT_EQ(valResult.status(), GameStatus::SamePlayer);
+  EXPECT_EQ(valResult.gameStatus, GameStatus::RepeatMove);
   EXPECT_FALSE(valResult);
-  EXPECT_TRUE(valResult.errorMessage());
-  EXPECT_EQ(valResult.errorMessage().value(),
+  EXPECT_TRUE(valResult.errorMessage);
+  EXPECT_EQ(valResult.errorMessage.value(),
             std::string{"Position is out of scope. Please, try again."});
 }
 
 TEST_F(TicTacToeFixture, ExpectToRepeatMoveWhenDuplicate) {
   setNewPosition = 1;
   // First attempt when newPosition == 1
-  EXPECT_TRUE(nextMove());
+  EXPECT_TRUE(playMove());
   // Second attempt when newPosition == 1
-  auto valResult = nextMove();
+  auto valResult = playMove();
 
-  EXPECT_EQ(valResult.status(), GameStatus::SamePlayer);
+  EXPECT_EQ(valResult.gameStatus, GameStatus::RepeatMove);
   EXPECT_FALSE(valResult);
-  EXPECT_TRUE(valResult.errorMessage());
-  EXPECT_EQ(valResult.errorMessage().value(),
+  EXPECT_TRUE(valResult.errorMessage);
+  EXPECT_EQ(valResult.errorMessage.value(),
             std::string{"Field is already populated. Please try again."});
 }
 
@@ -136,61 +136,61 @@ TEST_F(TicTacToeFixture, ExpectToRepeatMoveWhenDuplicate) {
 
 TEST_F(TicTacToeFixture, ExpectToRecognizeWinWhenThreeInARow) {
   setNewPosition = 1;
-  EXPECT_TRUE(nextMove());
+  EXPECT_TRUE(playMove());
   setNewPosition = 2;
-  EXPECT_TRUE(nextMove());
+  EXPECT_TRUE(playMove());
 
   setNewPosition = 3;
-  auto valResult = nextMove();
+  auto valResult = playMove();
 
-  EXPECT_EQ(valResult.status(), GameStatus::Winner);
+  EXPECT_EQ(valResult.gameStatus, GameStatus::Win);
   EXPECT_TRUE(valResult);
 }
 
 TEST_F(TicTacToeFixture, ExpectToRecognizeWinWhenThreeInAColumn) {
   setNewPosition = 1;
-  EXPECT_TRUE(nextMove());
+  EXPECT_TRUE(playMove());
 
   setNewPosition = TTT::COL + 1;
-  EXPECT_TRUE(nextMove());
+  EXPECT_TRUE(playMove());
 
   setNewPosition = TTT::COL * 2 + 1;
-  auto valResult = nextMove();
+  auto valResult = playMove();
 
-  EXPECT_EQ(valResult.status(), GameStatus::Winner);
+  EXPECT_EQ(valResult.gameStatus, GameStatus::Win);
   EXPECT_TRUE(valResult);
 }
 
 TEST_F(TicTacToeFixture, ExpectToRecognizeWinWhenThreeInADiagonal) {
   setNewPosition = 1;
-  EXPECT_TRUE(nextMove());
+  EXPECT_TRUE(playMove());
   setNewPosition = TTT::COL + 2;
-  EXPECT_TRUE(nextMove());
+  EXPECT_TRUE(playMove());
   setNewPosition = TTT::COL * 2 + 3;
 
-  auto valResult = nextMove();
+  auto valResult = playMove();
 
-  EXPECT_EQ(valResult.status(), GameStatus::Winner);
+  EXPECT_EQ(valResult.gameStatus, GameStatus::Win);
   EXPECT_TRUE(valResult);
 }
 
 TEST_F(TicTacToeFixture, ExpectToEndGameWhenNoMoreMovesLeft) {
   for (auto i = 1; i < 8; ++i) {
     setNewPosition = i;
-    EXPECT_TRUE(nextMove());
+    EXPECT_TRUE(playMove());
     switchPlayer();
   }
 
   // It's turn for the playerO. He needs to stop playerX from winning so the
   // move is 9.
   setNewPosition = 9;
-  nextMove();
+  playMove();
   switchPlayer();
 
   // Last move (playerX)
   setNewPosition = 8;
-  auto valResult = nextMove();
+  auto valResult = playMove();
 
-  EXPECT_EQ(valResult.status(), GameStatus::GameOver);
+  EXPECT_EQ(valResult.gameStatus, GameStatus::GameOver);
   EXPECT_TRUE(valResult);
 }

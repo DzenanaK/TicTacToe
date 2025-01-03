@@ -9,13 +9,41 @@ TicTacToe::TicTacToe()
 
 TicTacToe::~TicTacToe() {}
 
-void TicTacToe::switchPlayer() {
-  boardTable_.print();
-  currentPlayer_ = (currentPlayer_ == &playerX ? &playerO : &playerX);
+void TicTacToe::play() {
+  startMessage();
+
+  bool continuePlay{true};
+  do {
+    auto valResult = playMove();
+
+    // GameStatus handling
+    if (valResult.gameStatus == GameStatus::Continue) {
+      switchPlayer();
+    } else if (valResult.gameStatus == GameStatus::RepeatMove) {
+      valResult.printMessage();
+    } else if (valResult.gameStatus == GameStatus::Win) {
+      std::string message{"Game over: "};
+      message += currentPlayer_->name;
+      message += " is the winner. Congratulations!";
+      gameOver(continuePlay, std::move(message));
+    } else if (valResult.gameStatus == GameStatus::GameOver) {
+      gameOver(continuePlay, "Game over: no more moves left.");
+    } else {
+      // case status == End
+      gameOver(continuePlay, "Thank you for playing.");
+    }
+
+  } while (continuePlay);
 }
 
-ValidationResult TicTacToe::nextMove() {
-  const auto position = newPosition();
+void TicTacToe::startMessage() const {
+  std::cout << "Wellcome to the Tic Tac Toe game. " << std::endl
+            << "You will play on the following board: " << std::endl;
+  boardTable_.print();
+}
+
+ValidationResult TicTacToe::playMove() {
+  const auto position = getPosition();
 
   auto validationPassed = validator_.validate(position);
   if (!validationPassed) return validationPassed;
@@ -28,14 +56,14 @@ ValidationResult TicTacToe::nextMove() {
   boardTable_.insert(row, col, currentPlayer_->value);
 
   if (boardTable_.win(row, col))
-    return GameStatus::Winner;
+    return GameStatus::Win;
   else if (boardTable_.full())
     return GameStatus::GameOver;
 
-  return GameStatus::NextPlayer;
+  return GameStatus::Continue;
 }
 
-int TicTacToe::newPosition() const {
+int TicTacToe::getPosition() const {
   std::cout << currentPlayer_->name
             << "'s turn. Choose your position by typing the letter or type -1 "
                "to quit."
@@ -48,9 +76,19 @@ int TicTacToe::newPosition() const {
 
 std::pair<int, int> TicTacToe::calculateCoordinates(
     const uint8_t& newPosition) const {
-  // Substractiong 1 because computer counts from 0 and not from 1
+  // Subtracting 1 because computer counts from 0 and not from 1
   int position = newPosition - 1;
   int row = (position / TTT::COL);
   int col = position % TTT::COL;
   return {row, col};
+}
+
+void TicTacToe::switchPlayer() {
+  boardTable_.print();
+  currentPlayer_ = (currentPlayer_ == &playerX ? &playerO : &playerX);
+}
+
+void TicTacToe::gameOver(bool& continueGame, std::string&& message) const {
+  continueGame = false;
+  std::cout << message << std::endl;
 }
