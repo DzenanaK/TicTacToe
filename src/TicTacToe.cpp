@@ -64,10 +64,8 @@ ValidationResult TicTacToe::playMove() {
 }
 
 int TicTacToe::getPosition() const {
-  std::cout << currentPlayer_->name
-            << "'s turn. Choose your position by typing the letter or type -1 "
-               "to quit."
-            << std::endl;
+  std::cout << currentPlayer_->name << ", enter your move (1-"
+            << TTT::ROW * TTT::COL << ") or -1 to quit: ";
 
   int position = 0;
   std::cin >> position;
